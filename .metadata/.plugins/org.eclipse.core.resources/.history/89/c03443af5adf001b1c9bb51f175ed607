@@ -1,0 +1,46 @@
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class AddNewEntryTests {
+
+	static WebDriver driver = null;
+	static String baseUrl = "http://localhost/index.php";
+	
+	@BeforeEach
+	void setUp() throws Exception {
+		System.setProperty("webdriver.chrome.driver", "./chromedriver.exe");
+		driver = new ChromeDriver();
+	}
+	
+	@Test
+	void AddNewEntryVerifyElementsPresentTest() {
+		// expected label values
+		String[] expectedLabels = {"Entry Type:", "First Name:", "Last Name:", "Business Name:", "Address Line 1:", "Address Line 2:",
+								   "Address Line 3:", "City:", "Province:", "Country:", "Postal Code:" ,"E-mail 1:", "E-mail 2:", "E-mail 3:",
+								   "Phone 1 Type:", "Phone 1 NUmber:", "Phone 2 Type:", "Phone 2 Number:", "Phone 3 Type:", "Phone 3 Number:",
+								   "Web Site 1:", "Web Site 2:", "Web Site 3:"}; 
+		
+		// navigate to home page
+		driver.get(baseUrl);
+		// click Add New Entry link
+		driver.findElement(By.linkText("Add New Entry")).click();
+		// find all label elements and store them in a list
+		List<WebElement> actualLabels = driver.findElements(By.tagName("label"));
+		// assertions for all label text
+		for(int i = 0; i < actualLabels.size(); i++) {
+			assertEquals(expectedLabels[i], actualLabels.get(i).getText());
+		}
+		
+		driver.close();
+	}
+	
+}

@@ -1,0 +1,86 @@
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class AddNewEntryTests {
+
+	static WebDriver driver = null;
+	static String baseUrl = "http://localhost/index.php";
+	
+	static // form field id values
+	String[] formFieldIds = {"addr_type", "addr_first_name", "addr_last_name", "addr_business",
+			 "addr_addr_line_1", "addr_addr_line_2", "addr_addr_line_3", 
+			 "addr_city", "addr_region", "addr_country", "addr_post_code",
+			 "addr_email_1", "addr_email_2", "addr_email_3",
+			 "addr_phone_1_type", "addr_phone_1", "addr_phone_2_type", "addr_phone_2", "addr_phone_3_type", "addr_phone_3",
+			 "addr_web_url_1", "addr_web_url_2", "addr_web_url_3"};
+	
+	@BeforeEach
+	void setUp() throws Exception {
+		System.setProperty("webdriver.chrome.driver", "./chromedriver.exe");
+		driver = new ChromeDriver();
+	}
+	
+	@AfterEach
+	void tearDown() throws Exception {
+		driver.close();
+	}
+	
+	// test case 
+	@Test
+	void AddNewEntryVerifyElementsPresentTest() {
+		// expected label text
+		String[] expectedLabels = {"Entry Type:", "First Name:", "Last Name:", "Business Name:", 
+								   "Address Line 1:", "Address Line 2:", "Address Line 3:", 
+								   "City:", "Province:", "Country:", "Postal Code:",
+								   "E-mail 1:", "E-mail 2:", "E-mail 3:",
+								   "Phone 1 Type:", "Phone 1 NUmber:", "Phone 2 Type:", "Phone 2 Number:", "Phone 3 Type:", "Phone 3 Number:",
+								   "Web Site 1:", "Web Site 2:", "Web Site 3:"};
+		
+		// expected link values
+		String expectedLinkText = "Return to Menu (Cancel)";
+		String expectedLinkUrl = "http://localhost/index.php";
+		
+		// navigate to home page
+		driver.get(baseUrl);
+		// click Add New Entry link
+		driver.findElement(By.linkText("Add New Entry")).click();
+		// find all label elements and store them in a list
+		List<WebElement> actualLabels = driver.findElements(By.tagName("label"));
+		// assertions for all label text
+		for(int i = 0; i < actualLabels.size(); i++) {
+			assertEquals(expectedLabels[i], actualLabels.get(i).getText());
+		}
+		// assertions for all form fields
+		for(int i = 0; i < formFieldIds.length; i++) {
+			assertTrue(driver.findElement(By.id(formFieldIds[i])).isDisplayed());
+		}
+		// assertions for buttons
+		assertTrue(driver.findElement(By.id("submit_button")).isDisplayed());
+		assertTrue(driver.findElement(By.id("reset_button")).isDisplayed());
+		// assertions for return link
+		WebElement returnLink = driver.findElement(By.linkText(expectedLinkText));
+		assertTrue(returnLink.isDisplayed());
+		assertTrue(returnLink.getAttribute("href").equals(expectedLinkUrl));
+	}
+	
+	@Test
+	void AddNewEntryFullFormValidSubmissionTest() {
+		String[] formTestData = {};
+		
+	
+		// navigate to home page
+		//driver.get(baseUrl);
+		
+	}
+	
+}

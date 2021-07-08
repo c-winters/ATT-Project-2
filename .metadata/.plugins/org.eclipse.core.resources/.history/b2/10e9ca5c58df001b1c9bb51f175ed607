@@ -1,0 +1,57 @@
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class AddNewEntryTests {
+
+	static WebDriver driver = null;
+	static String baseUrl = "http://localhost/index.php";
+	
+	@BeforeEach
+	void setUp() throws Exception {
+		System.setProperty("webdriver.chrome.driver", "./chromedriver.exe");
+		driver = new ChromeDriver();
+	}
+	
+	@Test
+	void AddNewEntryVerifyElementsPresentTest() {
+		// navigate to home page
+		driver.get(baseUrl);
+		// click Add New Entry link
+		driver.findElement(By.linkText("Add New Entry")).click();
+		// find all label elements and store them in a list
+		List<WebElement> labels = driver.findElements(By.tagName("label"));
+		// assertions for all label text
+		assertEquals(labels.get(0).getText(), "Entry Type:");
+		assertEquals(labels.get(1).getText(), "First Name:");
+		assertEquals(labels.get(2).getText(), "Last Name:");
+		assertEquals(labels.get(3).getText(), "Business Name:");
+		assertEquals(labels.get(4).getText(), "Address Line 1:");
+		assertEquals(labels.get(5).getText(), "Address Line 2:");
+		assertEquals(labels.get(6).getText(), "Address Line 3:");
+		assertEquals(labels.get(7).getText(), "City:");
+		assertEquals(labels.get(8).getText(), "Province:");
+		assertEquals(labels.get(9).getText(), "Country:");
+		assertEquals(labels.get(10).getText(), "E-mail 1:");
+		assertEquals(labels.get(11).getText(), "E-mail 2:");
+		assertEquals(labels.get(12).getText(), "E-mail 3:");
+		assertEquals(labels.get(13).getText(), "Phone 1 Type:");
+		assertEquals(labels.get(14).getText(), "Phone 1 Number:");
+		assertEquals(labels.get(15).getText(), "Phone 2 Type:");
+		assertEquals(labels.get(16).getText(), "Phone 2 Number:");
+		assertEquals(labels.get(17).getText(), "Phone 3 Type:");
+		assertEquals(labels.get(18).getText(), "Phone 3 Number:");
+		assertEquals(labels.get(19).getText(), "Web Site 1:");
+		assertEquals(labels.get(20).getText(), "Web Site 2:");
+		assertEquals(labels.get(21).getText(), "Web Site 3:");
+	}
+	
+}
