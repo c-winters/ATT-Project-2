@@ -3,6 +3,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,15 +20,15 @@ import org.openqa.selenium.support.ui.Select;
 
 /**
  * 
- * @author Curtis Winters
+ * @author Deep Singh
  *
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AddNewEntryTests {
+public class EditEntryTest {
 
 	static WebDriver driver = null;
 	static String baseUrl = "http://localhost/index.php";
-	`
+	
 	// expected confirmation and error messages
 	static String expectedConfirmationMsg = "The new address book entry was added successfully";
 	static String expectedNameErrorMsg = "An person's name or business name must be specified.";
@@ -100,6 +102,19 @@ public class AddNewEntryTests {
 		assertTrue(returnLink.getAttribute("href").equals(expectedLinkUrl));
 	}
 	
+//	-----------------------------------------------------------------------------
+	@BeforeEach
+	void setUp() throws Exception {
+		System.setProperty("webdriver.chrome.driver", "C:\\chromedriver.exe");	
+		Logger.getLogger("").setLevel(Level.OFF);
+		System.setProperty("webdriver.chrome.silentOutput", "true");
+		driver = new ChromeDriver();
+	}
+	@AfterEach
+	void tearDown() throws Exception {
+		driver.close();
+	}
+//	-----------------------------------------------------------------------------	
 	// Test Case ID: ANE-VALID-ENTRY-001
 	@Test
 	@Order(2)
