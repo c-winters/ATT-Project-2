@@ -9,7 +9,7 @@ public class DB_test {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		// adding a line to test GitHub
+		// adding a line to test GitHub from mikeok branch
 
 		Connection conn = null;
 		java.sql.Statement stmt = null;
