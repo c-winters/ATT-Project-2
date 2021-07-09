@@ -200,7 +200,7 @@ public class AddNewEntryTests {
 	        }
 	    }
 	}
-	/*
+
 	// Test Case ID: ANE-LIST-ALL-MATCH-001
 	@Test
 	@Order(3)
@@ -390,5 +390,5 @@ public class AddNewEntryTests {
 			}
 		}
 	}
-	*/
+
 }
