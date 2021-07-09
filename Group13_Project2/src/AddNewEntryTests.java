@@ -1,6 +1,10 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +32,10 @@ public class AddNewEntryTests {
 
 	static WebDriver driver = null;
 	static String baseUrl = "http://localhost/index.php";
-	`
+	static Connection conn = null;
+	static java.sql.Statement stmt = null;
+	static ResultSet rs = null;
+	
 	// expected confirmation and error messages
 	static String expectedConfirmationMsg = "The new address book entry was added successfully";
 	static String expectedNameErrorMsg = "An person's name or business name must be specified.";
@@ -57,7 +64,25 @@ public class AddNewEntryTests {
 	static void etUpBeforeClass() throws Exception {
 		System.setProperty("webdriver.chrome.driver", "./chromedriver.exe");
 		driver = new ChromeDriver();
-		
+		try {
+		    conn = DriverManager.getConnection("jdbc:mysql://localhost/addressbook","root","root");
+		}
+		catch (SQLException ex) {
+		    // handle any errors
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		try {
+	        stmt = conn.createStatement();
+	        stmt.execute("DELETE FROM addresses where addr_id>2");
+		}
+	    catch (SQLException ex){
+	        // handle any errors
+	        System.out.println("SQLException: " + ex.getMessage());
+	        System.out.println("SQLState: " + ex.getSQLState());
+	        System.out.println("VendorError: " + ex.getErrorCode());
+	    }
 	}
 	
 	
@@ -73,7 +98,7 @@ public class AddNewEntryTests {
 	
 	@AfterAll
 	static void tearDownAfterClass() throws Exception {
-		driver.close();
+		//driver.close();
 	}
 	
 	// Test Case ID: ANE-VERIFY-ELEMENTS-001
@@ -139,9 +164,43 @@ public class AddNewEntryTests {
 		String actualConfirmationMsg = driver.findElement(By.xpath("/html/body/form/div/h2")).getText();
 		assertEquals(expectedConfirmationMsg, actualConfirmationMsg);
 		// assert continue button is present and enabled
-		assertTrue(driver.findElement(By.xpath("/html/body/form/div/input")).isEnabled());		
+		assertTrue(driver.findElement(By.xpath("/html/body/form/div/input")).isEnabled());	
+		
+		// assert that the database stored the correct information
+		
+		try {
+	        stmt = conn.createStatement();
+	        rs = stmt.executeQuery("SELECT * FROM addresses ORDER BY addr_id DESC limit 1");
+	        rs = stmt.getResultSet();
+	        rs.next();
+	        for(int i = 0; i < formFieldIds.length; i++) {
+				assertEquals(formTestData[i],rs.getString(formFieldIds[i]));
+				// System.out.println(formFieldIds[i] + " is correct");
+			}
+	    }
+	    catch (SQLException ex){
+	        // handle any errors
+	        System.out.println("SQLException: " + ex.getMessage());
+	        System.out.println("SQLState: " + ex.getSQLState());
+	        System.out.println("VendorError: " + ex.getErrorCode());
+	    }
+	    finally {
+	        if (rs != null) {
+	            try {
+	                rs.close();
+	            } catch (SQLException sqlEx) { } // ignore
+
+	            rs = null;
+	        }
+	        if (stmt != null) {
+	            try {
+	                stmt.close();
+	            } catch (SQLException sqlEx) { } // ignore
+	            stmt = null;
+	        }
+	    }
 	}
-	
+
 	// Test Case ID: ANE-LIST-ALL-MATCH-001
 	@Test
 	@Order(3)
@@ -331,4 +390,5 @@ public class AddNewEntryTests {
 			}
 		}
 	}
+
 }
