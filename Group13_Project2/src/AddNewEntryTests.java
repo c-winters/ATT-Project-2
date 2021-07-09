@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -51,15 +53,26 @@ public class AddNewEntryTests {
 			"test site 1", "test site 2", "test site 3"
 	};
 	
-	@BeforeEach
-	void setUp() throws Exception {
+	@BeforeAll
+	static void etUpBeforeClass() throws Exception {
 		System.setProperty("webdriver.chrome.driver", "./chromedriver.exe");
 		driver = new ChromeDriver();
+		
+	}
+	
+	
+	@BeforeEach
+	void setUp() throws Exception {
 		driver.get(baseUrl);
 	}
 	
 	@AfterEach
 	void tearDown() throws Exception {
+		
+	}
+	
+	@AfterAll
+	static void tearDownAfterClass() throws Exception {
 		driver.close();
 	}
 	
@@ -105,7 +118,7 @@ public class AddNewEntryTests {
 	@Order(2)
 	void AddNewEntryFullFormValidSubmissionTest() {
 		
-		
+		Select currentSelect = null;
 		// click Add New Entry link
 		driver.findElement(By.linkText("Add New Entry")).click();
 		// fill out form with test data
@@ -116,7 +129,7 @@ public class AddNewEntryTests {
 				currentElement.sendKeys(formTestData[i]);
 			// else the current form field is a select tag
 			}else {
-				Select currentSelect = new Select(currentElement);
+				currentSelect = new Select(currentElement);
 				currentSelect.selectByVisibleText(formTestData[i]);
 			}
 		}
