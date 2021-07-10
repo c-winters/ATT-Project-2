@@ -1,12 +1,18 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -30,6 +36,9 @@ public class EditEntryTest {
 
 	static WebDriver driver = null;
 	static String baseUrl = "http://localhost/index.php";
+	static Connection conn = null;
+	static java.sql.Statement stmt = null;
+	static ResultSet rs = null;
 	
 	// expected confirmation and error messages
 	static String expectedConfirmationMsg = "The address book entry was updated successfully";
@@ -115,19 +124,60 @@ public class EditEntryTest {
 								   	  "Web Site 3:"};
 	
 //	-----------------------------------------------------------------------------
-	@BeforeEach
-	void setUp() throws Exception {
-		System.setProperty("webdriver.chrome.driver", "c://chromedriver.exe");	
+	@BeforeAll
+	static void SetUpBeforeClass() throws Exception {
+		System.setProperty("webdriver.chrome.driver", "./chromedriver.exe");
 		Logger.getLogger("").setLevel(Level.OFF);
 		System.setProperty("webdriver.chrome.silentOutput", "true");
 		driver = new ChromeDriver();
+		
+		// setup database connection
+		try {
+		    conn = DriverManager.getConnection("jdbc:mysql://localhost/addressbook","root","root");
+		}
+		catch (SQLException ex) {
+		    // handle any errors
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		// restore test environment to original state
+		try {
+	        stmt = conn.createStatement();
+	        stmt.execute("DELETE FROM addresses where addr_id>2");
+		}
+	    catch (SQLException ex){
+	        // handle any errors
+	        System.out.println("SQLException: " + ex.getMessage());
+	        System.out.println("SQLState: " + ex.getSQLState());
+	        System.out.println("VendorError: " + ex.getErrorCode());
+	    }
+	}
+	
+	@BeforeEach
+	void setUp() throws Exception {
 		driver.get(baseUrl);
 	}
+	
 	@AfterEach
 	void tearDown() throws Exception {
-		driver.close();
+		
+	}
+	
+	@AfterAll
+	static void tearDownAfterClass() throws Exception {
+		//driver.close();
 	}
 //	-----------------------------------------------------------------------------	
+	//clear field method
+	static void clearField() {
+		for(int i = 0; i < formFieldIds.length; i++) {
+			WebElement field = driver.findElement(By.id(formFieldIds[i]));
+			field.sendKeys(Keys.chord(Keys.CONTROL,"a"));
+			field.sendKeys(Keys.BACK_SPACE);
+		}
+	  }
+//  -----------------------------------------------------------------------------	
 	//Test Case ID: EE-VERIFY-AllLIST-001
 	@Test
 	@Order(1)
@@ -183,17 +233,7 @@ public class EditEntryTest {
 		assertTrue(returnLink.isDisplayed());
 		assertTrue(returnLink.getAttribute("href").equals(expectedUrl));
 	}
-
-	//clear field method
-		static void clearField() {
-			for(int i = 0; i < formFieldIds.length; i++) {
-				WebElement field = driver.findElement(By.id(formFieldIds[i]));
-				field.sendKeys(Keys.chord(Keys.CONTROL,"a"));
-				field.sendKeys(Keys.BACK_SPACE);
-			}
-		  }
-	
-		
+			
 	// Test Case ID: EE-INVALID-ENTRY-001
 		@Test
 		@Order(4)
@@ -220,25 +260,73 @@ public class EditEntryTest {
 		@Test
 		@Order(5)
 		void ValidEditEntryTest1() {
-			// click List all Entries
-			driver.findElement(By.linkText("List All Entries")).click();
-			// Click Edit Details
-			driver.findElement(By.xpath("//input[@value='Edit Details']")).submit();
+			int firstValid[] = {1,2,3,1,2,3,1,2,3,1,2,3};
+			int secondValid[] = {4,5,6,11,12,13,15,17,19,20,21,22};
 			
-			clearField();
-			
-			// check minimum requirements
-			driver.findElement(By.id(formFieldIds[1])).sendKeys("edit test");
-			driver.findElement(By.id(formFieldIds[4])).sendKeys("edit test");
-			
-			// submit form
-			driver.findElement(By.id("submit_button")).click();
-			
-			// assert error messages
-			String actualConfirmationMsg = driver.findElement(By.xpath("/html/body/form/div/h2")).getText();
-			assertEquals(expectedConfirmationMsg, actualConfirmationMsg);
-		}
+			for ( int index = 0; index<firstValid.length; index++ ) {
+				// click List all Entries
+				driver.findElement(By.linkText("List All Entries")).click();
+				// Click Edit Details
+				driver.findElement(By.xpath("//input[@value='Edit Details']")).submit();
+				
+				clearField();
+				
+				// check minimum requirements
+				driver.findElement(By.id(formFieldIds[firstValid[index]])).sendKeys("edit test");
+				driver.findElement(By.id(formFieldIds[secondValid[index]])).sendKeys("edit test");
+				
+				// submit form
+				driver.findElement(By.id("submit_button")).click();
+				
+				// assert error messages
+				String actualConfirmationMsg = driver.findElement(By.xpath("/html/body/form/div/h2")).getText();
+				assertEquals(expectedConfirmationMsg, actualConfirmationMsg);
+				try {
+			        stmt = conn.createStatement();
+			        rs = stmt.executeQuery("SELECT * FROM addresses ORDER BY addr_id DESC limit 1");
+			        rs = stmt.getResultSet();
+			        rs.next();
+			        for ( int db_index = 1; db_index < formFieldIds.length; db_index++ ) {
+			        	if ( db_index != 14 && db_index != 16 && db_index != 18 ) {
+			        		if ( db_index == firstValid[index] || db_index == secondValid[index] ) {
+				        		assertEquals("edit test",rs.getString(formFieldIds[db_index]));
+				        		
+				        	}
+				        	else {
+				        		assertEquals("",rs.getString(formFieldIds[db_index]));	
+				        	}
+				        	//System.out.println("DB process is correct");
+			        	}
+			        }
+			    }
+			    catch (SQLException ex){
+			        // handle any errors
+			        System.out.println("SQLException: " + ex.getMessage());
+			        System.out.println("SQLState: " + ex.getSQLState());
+			        System.out.println("VendorError: " + ex.getErrorCode());
+			    }
+			    finally {
+			        if (rs != null) {
+			            try {
+			                rs.close();
+			            } catch (SQLException sqlEx) { } // ignore
 	
+			            rs = null;
+			        }
+			        if (stmt != null) {
+			            try {
+			                stmt.close();
+			            } catch (SQLException sqlEx) { } // ignore
+			            stmt = null;
+			        }
+			    }
+				// click continue button
+				driver.findElement(By.xpath("/html/body/form/div/input")).click();
+				// back on index.php and ready for next loop
+			}
+			
+		}
+		/*
 	// Test Case ID: EE-VALID-ENTRY-002
 		@Test
 		@Order(6)
@@ -295,9 +383,11 @@ public class EditEntryTest {
 			// Click Edit Details
 			driver.findElement(By.xpath("//input[@value='Edit Details']")).submit();
 			
-			for(int i = 0; i < formFieldIds.length; i++) {
-				driver.findElement(By.id(formFieldIds[i])).sendKeys("\u0008");
-			}
+			clearField();
+			
+			//for(int i = 0; i < formFieldIds.length; i++) {
+				//driver.findElement(By.id(formFieldIds[i])).sendKeys("\u0008");
+			//}
 			
 			// check minimum requirements
 			driver.findElement(By.id(formFieldIds[1])).sendKeys("edit test");
@@ -310,7 +400,7 @@ public class EditEntryTest {
 			String actualConfirmationMsg = driver.findElement(By.xpath("/html/body/form/div/h2")).getText();
 			assertEquals(expectedConfirmationMsg, actualConfirmationMsg);
 		}
-	
+		
 	// Test Case ID: EE-VALID-ENTRY-005
 		@Test
 		@Order(9)
@@ -502,18 +592,19 @@ public class EditEntryTest {
 			String actualConfirmationMsg = driver.findElement(By.xpath("/html/body/form/div/h2")).getText();
 			assertEquals(expectedConfirmationMsg, actualConfirmationMsg);
 		}
-		
+	*/	
 	// Test Case ID: EE-VIEW-ENTRY-001
-		@Test
-		@Order(17)
-		void ViewEntryTest01() {
-			// click List all Entries
-			driver.findElement(By.linkText("List All Entries")).click();
-			// Click Edit Details
-			driver.findElement(By.xpath("//td[contains(text(),'edit test')]/following-sibling::td/following-sibling::td/descendant::input")).submit();
-	
-			List<WebElement> testdata = driver.findElements(By.xpath("//td[contains(text(),'edit test')]"));
-			assertEquals(testdata.size(),2);
+	@Test
+	@Order(17)
+	void ViewEntryTest01() {
+		// click List all Entries
+		driver.findElement(By.linkText("List All Entries")).click();
+		// Click Edit Details
+		driver.findElement(By.xpath("//td[contains(text(),'edit test')]/following-sibling::td/following-sibling::td/descendant::input")).submit();
+
+		List<WebElement> testdata = driver.findElements(By.xpath("//td[contains(text(),'edit test')]"));
+		assertEquals(testdata.size(),2);
 			
 	}
+	
 }

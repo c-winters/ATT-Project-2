@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -65,11 +67,11 @@ public class AddNewEntryTests {
 	};
 	
 	@BeforeAll
-	static void etUpBeforeClass() throws Exception {
+	static void SetUpBeforeClass() throws Exception {
 		System.setProperty("webdriver.chrome.driver", "./chromedriver.exe");
+		Logger.getLogger("").setLevel(Level.OFF);
+		System.setProperty("webdriver.chrome.silentOutput", "true");
 		driver = new ChromeDriver();
-		
-		
 		// setup database connection
 		try {
 		    conn = DriverManager.getConnection("jdbc:mysql://localhost/addressbook","root","root");
@@ -80,6 +82,7 @@ public class AddNewEntryTests {
 		    System.out.println("SQLState: " + ex.getSQLState());
 		    System.out.println("VendorError: " + ex.getErrorCode());
 		}
+		// restore test environment to original state
 		try {
 	        stmt = conn.createStatement();
 	        stmt.execute("DELETE FROM addresses where addr_id>2");
@@ -315,9 +318,23 @@ public class AddNewEntryTests {
 				        rs = stmt.executeQuery("SELECT * FROM addresses ORDER BY addr_id DESC limit 1");
 				        rs = stmt.getResultSet();
 				        rs.next();
-				        assertEquals("a",rs.getString(formFieldIds[nameIndexes[n]]));
-				        assertEquals("a",rs.getString(formFieldIds[addrIndexes[a]]));	
-							// System.out.println("DB process is correct");
+				        for (int db_n = 0; db_n < nameIndexes.length; db_n++) {
+				        	if (db_n == n ) {
+				        		assertEquals("a",rs.getString(formFieldIds[nameIndexes[db_n]]));
+				        	}
+				        	else {
+				        		assertEquals("",rs.getString(formFieldIds[nameIndexes[db_n]]));
+				        	}
+				        	for ( int db_a = 0; db_a < addrIndexes.length; db_a++ ) {
+				        		if ( db_a == a ) {
+				        			assertEquals("a",rs.getString(formFieldIds[addrIndexes[db_a]]));
+				        		}
+				        		else {
+				        			assertEquals("",rs.getString(formFieldIds[addrIndexes[db_a]]));
+				        		}
+				        	}
+				        	System.out.println("DB process is correct");
+				        }
 				    }
 				    catch (SQLException ex){
 				        // handle any errors
