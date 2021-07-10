@@ -35,6 +35,10 @@ public class AddNewEntryTests {
 	static Connection conn = null;
 	static java.sql.Statement stmt = null;
 	static ResultSet rs = null;
+	static WebElement currentElement = null;
+	static Select currentSelect = null;
+	static List<WebElement> allRows = null;
+	static WebElement mostRecentRow = null;
 	
 	// expected confirmation and error messages
 	static String expectedConfirmationMsg = "The new address book entry was added successfully";
@@ -64,6 +68,9 @@ public class AddNewEntryTests {
 	static void etUpBeforeClass() throws Exception {
 		System.setProperty("webdriver.chrome.driver", "./chromedriver.exe");
 		driver = new ChromeDriver();
+		
+		
+		// setup database connection
 		try {
 		    conn = DriverManager.getConnection("jdbc:mysql://localhost/addressbook","root","root");
 		}
@@ -89,6 +96,10 @@ public class AddNewEntryTests {
 	@BeforeEach
 	void setUp() throws Exception {
 		driver.get(baseUrl);
+		currentElement = null;
+		currentSelect = null;
+		allRows = null;
+		mostRecentRow = null;
 	}
 	
 	@AfterEach
@@ -115,7 +126,7 @@ public class AddNewEntryTests {
 		
 		// expected link values
 		String expectedLinkText = "Return to Menu (Cancel)";
-		String expectedLinkUrl = "http://localhost/index.php";
+		String expectedLinkUrl = baseUrl;
 
 		// click Add New Entry link
 		driver.findElement(By.linkText("Add New Entry")).click();
@@ -142,13 +153,11 @@ public class AddNewEntryTests {
 	@Test
 	@Order(2)
 	void AddNewEntryFullFormValidSubmissionTest() {
-		
-		Select currentSelect = null;
 		// click Add New Entry link
 		driver.findElement(By.linkText("Add New Entry")).click();
 		// fill out form with test data
 		for(int i = 0; i < formFieldIds.length; i++) {
-			WebElement currentElement = driver.findElement(By.id(formFieldIds[i]));
+			currentElement = driver.findElement(By.id(formFieldIds[i]));
 			// if the current form field is an input tag
 			if(currentElement.getTagName().equals("input")) {
 				currentElement.sendKeys(formTestData[i]);
@@ -167,7 +176,6 @@ public class AddNewEntryTests {
 		assertTrue(driver.findElement(By.xpath("/html/body/form/div/input")).isEnabled());	
 		
 		// assert that the database stored the correct information
-		
 		try {
 	        stmt = conn.createStatement();
 	        rs = stmt.executeQuery("SELECT * FROM addresses ORDER BY addr_id DESC limit 1");
@@ -208,8 +216,8 @@ public class AddNewEntryTests {
 		// click "List All Entries" link
 		driver.findElement(By.linkText("List All Entries")).click();
 		// get all cells in the most recent row
-		List<WebElement> allRows = driver.findElements(By.tagName("tr"));
-		WebElement mostRecentRow = allRows.get(allRows.size() - 1);
+		allRows = driver.findElements(By.tagName("tr"));
+		mostRecentRow = allRows.get(allRows.size() - 1);
 		List<WebElement> mostRecentCells = mostRecentRow.findElements(By.tagName("td"));
 		// compare cell text to test data
 		assertEquals(formTestData[0], mostRecentCells.get(0).getText());
@@ -226,8 +234,8 @@ public class AddNewEntryTests {
 		// click "List All Entries" link
 		driver.findElement(By.linkText("List All Entries")).click();
 		// click View Details button for most recent row/entry
-		List<WebElement> allRows = driver.findElements(By.tagName("tr"));
-		WebElement mostRecentRow = allRows.get(allRows.size() - 1);
+		allRows = driver.findElements(By.tagName("tr"));
+		mostRecentRow = allRows.get(allRows.size() - 1);
 		mostRecentRow.findElements(By.tagName("input")).get(1).click();
 		// store all entry value cells in a list
 		List<WebElement> rows = driver.findElements(By.tagName("tr"));
@@ -261,14 +269,14 @@ public class AddNewEntryTests {
 		// click "List All Entries" link
 		driver.findElement(By.linkText("List All Entries")).click();
 		// click Edit Details button for most recent row/entry
-		List<WebElement> allRows = driver.findElements(By.tagName("tr"));
-		WebElement mostRecentRow = allRows.get(allRows.size() - 1);
+		allRows = driver.findElements(By.tagName("tr"));
+		mostRecentRow = allRows.get(allRows.size() - 1);
 		mostRecentRow.findElements(By.tagName("input")).get(4).click();
 		// compare actual to expected values
 		for(int i = 0; i < formFieldIds.length; i++) {
-			WebElement currentElement = driver.findElement(By.id(formFieldIds[i]));
+			currentElement = driver.findElement(By.id(formFieldIds[i]));
 			if(currentElement.getTagName().equals("select")) {
-				Select currentSelect = new Select(currentElement);
+				currentSelect = new Select(currentElement);
 				assertEquals(formTestData[i], currentSelect.getFirstSelectedOption().getText());
 			} else {
 				assertEquals(formTestData[i], currentElement.getAttribute("value"));
@@ -280,7 +288,8 @@ public class AddNewEntryTests {
 	@Test
 	@Order(6)
 	void AllCombinationsOfMinimumRequirementsForAddNewEntryTest() {
-		String expectedConfirmationMsg = "The new address book entry was added successfully";
+		String actualConfirmationMsg = "";
+
 		// indexes of required fields in formFieldIds
 		int[] nameIndexes = {1,2,3};
 		int[] addrIndexes = {4,5,6,7,8,9,10,11,12,13,15,17,19,20,21,22};
@@ -297,13 +306,46 @@ public class AddNewEntryTests {
 				// submit form
 				driver.findElement(By.id("submit_button")).click();
 				// assert confirmation message
-				String actualConfirmationMsg = "";
+				actualConfirmationMsg = "";
 				try {
 					actualConfirmationMsg = driver.findElement(By.xpath("/html/body/form/div/h2")).getText();
+					// assert that the database stored the correct information
+					try {
+				        stmt = conn.createStatement();
+				        rs = stmt.executeQuery("SELECT * FROM addresses ORDER BY addr_id DESC limit 1");
+				        rs = stmt.getResultSet();
+				        rs.next();
+				        assertEquals("a",rs.getString(formFieldIds[nameIndexes[n]]));
+				        assertEquals("a",rs.getString(formFieldIds[addrIndexes[a]]));	
+							// System.out.println("DB process is correct");
+				    }
+				    catch (SQLException ex){
+				        // handle any errors
+				        System.out.println("SQLException: " + ex.getMessage());
+				        System.out.println("SQLState: " + ex.getSQLState());
+				        System.out.println("VendorError: " + ex.getErrorCode());
+				    }
+				    finally {
+				        if (rs != null) {
+				            try {
+				                rs.close();
+				            } catch (SQLException sqlEx) { } // ignore
+	
+				            rs = null;
+				        }
+				        if (stmt != null) {
+				            try {
+				                stmt.close();
+				            } catch (SQLException sqlEx) { } // ignore
+				            stmt = null;
+				        }
+				    }
 				} catch (Exception e) {
 					System.out.println("Submission using " + formFieldIds[n] + " and " + formFieldIds[a] + " failed");
 				}
 				assertEquals(expectedConfirmationMsg, actualConfirmationMsg);
+				
+				
 				// click continue button
 				driver.findElement(By.xpath("/html/body/form/div/input")).click();
 				// back on index.php and ready for next loop
@@ -338,7 +380,7 @@ public class AddNewEntryTests {
 		// assert error message
 		String actualErrorMsg = driver.findElement(By.xpath("/html/body/p")).getText();
 		assertTrue(actualErrorMsg.contains(expectedAddressErrorMsg));
-}
+	}
 	
 	// Test Case ID: ANE-INVALID-ENTRY-003
 	@Test
@@ -363,13 +405,13 @@ public class AddNewEntryTests {
 		driver.findElement(By.linkText("Add New Entry")).click();
 		// fill out all form fields
 		for(int i = 0; i < formFieldIds.length; i++) {
-			WebElement currentElement = driver.findElement(By.id(formFieldIds[i]));
+			currentElement = driver.findElement(By.id(formFieldIds[i]));
 			// if the current form field is an input tag
 			if(currentElement.getTagName().equals("input")) {
 				currentElement.sendKeys("a");
 			// else the current form field is a select tag
 			} else {
-				Select currentSelect = new Select(currentElement);
+				currentSelect = new Select(currentElement);
 				currentSelect.selectByIndex(1);
 			}
 		}
@@ -379,13 +421,13 @@ public class AddNewEntryTests {
 		Select typeSelect = new Select(driver.findElement(By.id("addr_type")));
 		assertEquals("Family", typeSelect.getFirstSelectedOption().getAttribute("value"));
 		for(int i = 1; i < formFieldIds.length; i++) {
-			WebElement currentElement = driver.findElement(By.id(formFieldIds[i]));
+			currentElement = driver.findElement(By.id(formFieldIds[i]));
 			// if the current form field is an input tag
 			if(currentElement.getTagName().equals("input")) {
 				assertEquals("", currentElement.getText());
 			// else the current form field is a select tag
 			} else {
-			 	Select currentSelect = new Select(currentElement);
+			 	currentSelect = new Select(currentElement);
 				assertEquals("Home", currentSelect.getFirstSelectedOption().getAttribute("value"));
 			}
 		}
