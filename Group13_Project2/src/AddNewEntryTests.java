@@ -109,7 +109,7 @@ public class AddNewEntryTests {
 	
 	@AfterAll
 	static void tearDownAfterClass() throws Exception {
-		//driver.close();
+		driver.close();
 	}
 	
 	// Test Case ID: ANE-VERIFY-ELEMENTS-001
