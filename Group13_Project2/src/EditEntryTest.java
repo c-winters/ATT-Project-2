@@ -35,8 +35,8 @@ public class EditEntryTest {
 	static String expectedAddressErrorMsg = "At least one of the following must be entered: street/mailing address, email address, phone number or web site url.";
 
 	// expected link values
-	static String expectedLinkText = "Return to Menu (Cancel)";
-	static String expectedLinkUrl = "http://localhost/index.php";
+	static String expectedLinkText = "Return (Cancel)";
+	static String expectedLinkUrl = "http://localhost/allList.php";
 	
 	// form field id values
 	static String[] formFieldIds = {"addr_type",
@@ -115,16 +115,16 @@ public class EditEntryTest {
 //	-----------------------------------------------------------------------------
 	@BeforeEach
 	void setUp() throws Exception {
-		System.setProperty("webdriver.chrome.driver", "./chromedriver.exe");	
+		System.setProperty("webdriver.chrome.driver", "c://chromedriver.exe");	
 		Logger.getLogger("").setLevel(Level.OFF);
 		System.setProperty("webdriver.chrome.silentOutput", "true");
 		driver = new ChromeDriver();
 		driver.get(baseUrl);
 	}
-	@AfterEach
-	void tearDown() throws Exception {
-		driver.close();
-	}
+//	@AfterEach
+//	void tearDown() throws Exception {
+//		driver.close();
+//	}
 //	-----------------------------------------------------------------------------	
 	
 	// Test Case ID: EE-VERIFY-ELEMENTS-001
@@ -134,7 +134,7 @@ public class EditEntryTest {
 		// click List all Entries
 		driver.findElement(By.linkText("List All Entries")).click();
 		// Click Edit Details
-		driver.findElement(By.id("Edit Details")).click();
+		driver.findElement(By.xpath("//input[@value='Edit Details']")).submit();
 		
 		// find all label elements and store them in a list
 		List<WebElement> actualLabels = driver.findElements(By.tagName("label"));
@@ -156,4 +156,38 @@ public class EditEntryTest {
 		assertTrue(returnLink.isDisplayed());
 		assertTrue(returnLink.getAttribute("href").equals(expectedLinkUrl));
 	}
+	
+	// Test Case ID: EE-VALID-ENTRY-001
+		@Test
+		@Order(2)
+		void EditEntryFullFormValidSubmissionTest() {
+			
+			Select currentSelect = null;
+			
+			// click List all Entries
+			driver.findElement(By.linkText("List All Entries")).click();
+			// Click Edit Details
+			driver.findElement(By.xpath("//input[@value='Edit Details']")).submit();
+			
+			// fill out form with test data
+			for(int i = 0; i < formFieldIds.length; i++) {
+				WebElement currentElement = driver.findElement(By.id(formFieldIds[i]));
+				// if the current form field is an input tag
+				if(currentElement.getTagName().equals("input")) {
+					currentElement.sendKeys(formTestData[i]);
+				// else the current form field is a select tag
+				}else {
+					currentSelect = new Select(currentElement);
+					currentSelect.selectByVisibleText(formTestData[i]);
+				}
+			}
+			// submit form
+			driver.findElement(By.id("submit_button")).click();
+			// assert confirmation message is correct
+			String actualConfirmationMsg = driver.findElement(By.xpath("/html/body/form/div/h2")).getText();
+			assertEquals(expectedConfirmationMsg, actualConfirmationMsg);
+			
+			// assert continue button is present and enabled
+			assertTrue(driver.findElement(By.xpath("/html/body/form/div/input")).isEnabled());		
+		}
 }
