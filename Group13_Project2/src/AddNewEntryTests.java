@@ -491,25 +491,29 @@ public class AddNewEntryTests {
 	@Test
 	@Order(11)
 	void AddNewEntryFreshPageTextboxLength() {
+		boolean testsOK = true;
 		// go to add new entry page
 		driver.findElement(By.linkText("Add New Entry")).click();
 		// assertions size for all text box form fields
 		for(int i = 0; i < formFieldIds.length; i++) {
 			if ( formFieldSize[i] != 0 ) {  // does not check input length for dropdowns
-				// System.out.println(formFieldIds[i]); // used to isolate the form box with the incorrect data
-				assertEquals(Integer.toString(formFieldSize[i]),driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength"));
+				if (!Integer.toString(formFieldSize[i]).equals(driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength"))) {
+					System.out.println(formFieldIds[i] + " is " + driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength") + " but should be " + formFieldSize[i]);
+					testsOK = false;
+				}
 			}
-			
 		}
 		// capture screenshot
 		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
 		writeScreenshot("ANE-TEXTBOX-LENGTH-001", screenshot);
+		assertTrue(testsOK);
 	}
 	
 	// Test Case ID: ANE-ERROR-TEXTBOX-LENGTH-001
 	@Test
 	@Order(12)
 	void AddNewEntryErrorPageTextboxLength() {
+		boolean testsOK = true;
 		// go to add new entry page
 		driver.findElement(By.linkText("Add New Entry")).click();
 		// submit form with no information to produce error page
@@ -517,14 +521,16 @@ public class AddNewEntryTests {
 		// assertions size for all text box form fields
 		for(int i = 0; i < formFieldIds.length; i++) {
 			if ( formFieldSize[i] != 0 ) {  // does not check input length for dropdowns
-				// System.out.println(formFieldIds[i]); // used to isolate the form box with the incorrect data
-				assertEquals(Integer.toString(formFieldSize[i]),driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength"));
+				if (!Integer.toString(formFieldSize[i]).equals(driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength"))) {
+					System.out.println(formFieldIds[i] + " is " + driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength") + " but should be " + formFieldSize[i]);
+					testsOK = false;
+				}
 			}
-			
 		}
 		// capture screenshot
 		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
 		writeScreenshot("ANE-ERROR-TEXTBOX-LENGTH-001", screenshot);
+		assertTrue(testsOK);
 	}
 	
 	private void writeScreenshot(String filename, File screenshot) {
