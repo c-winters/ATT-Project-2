@@ -529,9 +529,15 @@ public class AddNewEntryTests {
 	
 	private void writeScreenshot(String filename, File screenshot) {
 		System.out.println("Attempting to write screenshot...");
-		String path = "./Screenshots/" + filename + ".png";
+		String directoryName = "./Screenshots/";
+		File directory = new File(String.valueOf(directoryName));
+		filename = directoryName + filename + ".png";
+		 if(!directory.exists()){
+            directory.mkdir();
+		}
+		
 		try {
-			FileHandler.copy(screenshot, new File(path));
+			FileHandler.copy(screenshot, new File(filename));
 			System.out.println("writing screenshot for test " + filename);
 		} catch (IOException e) {
 			System.out.println("Failed to write file: " + filename + " screenshot.");
