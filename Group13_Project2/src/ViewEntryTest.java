@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -54,22 +56,31 @@ public class ViewEntryTest {
 								   	  "Web Site 3:"};
 	
 //	-----------------------------------------------------------------------------
-	@BeforeEach
-	void setUp() throws Exception {
-		System.setProperty("webdriver.chrome.driver", "c://chromedriver.exe");	
+	@BeforeAll
+	static void SetUpBeforeClass() throws Exception {
+		System.setProperty("webdriver.chrome.driver", "./chromedriver.exe");
 		Logger.getLogger("").setLevel(Level.OFF);
 		System.setProperty("webdriver.chrome.silentOutput", "true");
 		driver = new ChromeDriver();
+	}
+	
+	@BeforeEach
+	void setUp() throws Exception {
 		driver.get(baseUrl);
 	}
 	@AfterEach
 	void tearDown() throws Exception {
+		
+	}
+	
+	@AfterAll
+	static void tearDownAfterClass() throws Exception {
 		driver.close();
 	}
 //	-----------------------------------------------------------------------------	
 	//Test Case ID: VD-VERIFY-VIEWBUTTON-001
 		@Test
-		@Order(2)
+		@Order(1)
 		void ViewButtonTest() {
 			// click List all Entries
 			driver.findElement(By.linkText("List All Entries")).click();
@@ -84,7 +95,7 @@ public class ViewEntryTest {
 		
 	// Test Case ID: VD-VERIFY-ELEMENTS-001
 	@Test
-	@Order(3)
+	@Order(2)
 	void ViewEntryVerifyElementsPresentTest() {
 		// click List all Entries
 		driver.findElement(By.linkText("List All Entries")).click();
@@ -93,11 +104,11 @@ public class ViewEntryTest {
 		
 		// find all label elements and store them in a list
 		List<WebElement> actualLabels = driver.findElements(By.xpath("//td[contains(text(),':')]"));
-		System.out.println(actualLabels.size());
+		//System.out.println(actualLabels.size());
 		
 		// assertions for all label text
 		for(int i = 0; i < actualLabels.size(); i++) {
-			System.out.print(actualLabels.get(i).getText());
+			//System.out.print(actualLabels.get(i).getText());
 			assertEquals(expectedLabels[i], actualLabels.get(i).getText());}
 				
 		
