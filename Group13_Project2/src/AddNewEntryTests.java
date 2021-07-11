@@ -333,7 +333,7 @@ public class AddNewEntryTests {
 				        			assertEquals("",rs.getString(formFieldIds[addrIndexes[db_a]]));
 				        		}
 				        	}
-				        	System.out.println("DB process is correct");
+				        	//System.out.println("DB process is correct");
 				        }
 				    }
 				    catch (SQLException ex){
