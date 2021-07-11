@@ -194,9 +194,6 @@ public class EditEntryTest {
 		// Click Edit Details
 		String actualUrl = driver.getCurrentUrl();
 		assertEquals(actualUrl,expectedUrl);	
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("EE-VERIFY-AllLIST-001", screenshot);	
 	 }
 
 	//Test Case ID: EE-VERIFY-EDITBUTTON-001
@@ -214,7 +211,7 @@ public class EditEntryTest {
 		assertEquals(count,buttoncount);	
 		// capture screenshot
 		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("EE-VERIFY-EDITBUTTON-001", screenshot);
+		writeScreenshot("EE-VERIFY-ELEMENTS-001", screenshot);
 	 }	
 	
 	// Test Case ID: EE-VERIFY-ELEMENTS-001

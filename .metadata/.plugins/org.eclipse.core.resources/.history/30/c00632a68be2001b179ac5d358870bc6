@@ -156,10 +156,7 @@ public class AddNewEntryTests {
 		// assertions for return link
 		WebElement returnLink = driver.findElement(By.linkText(expectedLinkText));
 		assertTrue(returnLink.isDisplayed());
-		assertTrue(returnLink.getAttribute("href").equals(expectedLinkUrl));	
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-VERIFY-ELEMENTS-001", screenshot);
+		assertTrue(returnLink.getAttribute("href").equals(expectedLinkUrl));
 	}
 	
 	// Test Case ID: ANE-VALID-ENTRY-001
@@ -187,9 +184,6 @@ public class AddNewEntryTests {
 		assertEquals(expectedConfirmationMsg, actualConfirmationMsg);
 		// assert continue button is present and enabled
 		assertTrue(driver.findElement(By.xpath("/html/body/form/div/input")).isEnabled());	
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-VALID-ENTRY-001", screenshot);
 		
 		// assert that the database stored the correct information
 		try {
@@ -241,9 +235,6 @@ public class AddNewEntryTests {
 		assertTrue(mostRecentCells.get(1).getText().contains(formTestData[2]));
 		assertTrue(mostRecentCells.get(1).getText().contains(formTestData[3]));
 		assertEquals(formTestData[7], mostRecentCells.get(2).getText().trim());
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-LIST-ALL-MATCH-001", screenshot);
 	}
 	
 	// Test Case ID: ANE-VIEW-DETAILS-MATCH-001
@@ -278,10 +269,7 @@ public class AddNewEntryTests {
 			}else {
 				assertEquals(formTestData[i], actualValues.get(i));
 			}
-		}
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-VIEW-DETAILS-MATCH-001", screenshot);	
+		}	
 	}
 	
 	// Test Case ID: ANE-EDIT-DETAILS-MATCH-001
@@ -304,9 +292,6 @@ public class AddNewEntryTests {
 				assertEquals(formTestData[i], currentElement.getAttribute("value"));
 			}
 		}
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-EDIT-DETAILS-MATCH-001", screenshot);
 	}
 	
 	// Test Case ID: ANE-VALID-ENTRY-002
@@ -390,9 +375,6 @@ public class AddNewEntryTests {
 				// back on index.php and ready for next loop
 			}
 		}
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-VALID-ENTRY-002", screenshot);
 	}
 	
 	//Test Case ID: ANE-INVALID-ENTRY-001
@@ -407,9 +389,6 @@ public class AddNewEntryTests {
 		String actualErrorMsg = driver.findElement(By.xpath("/html/body/p")).getText();
 		assertTrue(actualErrorMsg.contains(expectedNameErrorMsg));
 		assertTrue(actualErrorMsg.contains(expectedAddressErrorMsg));
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-INVALID-ENTRY-001", screenshot);
 	}
 	
 	//Test Case ID: ANE-INVALID-ENTRY-002
@@ -425,9 +404,6 @@ public class AddNewEntryTests {
 		// assert error message
 		String actualErrorMsg = driver.findElement(By.xpath("/html/body/p")).getText();
 		assertTrue(actualErrorMsg.contains(expectedAddressErrorMsg));
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-INVALID-ENTRY-002", screenshot);
 	}
 	
 	// Test Case ID: ANE-INVALID-ENTRY-003
@@ -443,9 +419,6 @@ public class AddNewEntryTests {
 		// assert error message
 		String actualErrorMsg = driver.findElement(By.xpath("/html/body/p")).getText();
 		assertTrue(actualErrorMsg.contains(expectedNameErrorMsg));
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-INVALID-ENTRY-003", screenshot);
 	}
 	
 	// Test Case ID: ANE-CLEAR-FORM-001
@@ -482,9 +455,6 @@ public class AddNewEntryTests {
 				assertEquals("Home", currentSelect.getFirstSelectedOption().getAttribute("value"));
 			}
 		}
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-CLEAR-FORM-001", screenshot);
 	}
 	
 	// Test Case ID: ANE-TEXTBOX-LENGTH-001
@@ -501,9 +471,6 @@ public class AddNewEntryTests {
 			}
 			
 		}
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-TEXTBOX-LENGTH-001", screenshot);
 	}
 	
 	// Test Case ID: ANE-ERROR-TEXTBOX-LENGTH-001
@@ -524,7 +491,7 @@ public class AddNewEntryTests {
 		}
 		// capture screenshot
 		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-ERROR-TEXTBOX-LENGTH-001", screenshot);
+		writeScreenshot("ANE-INVALID-ENTRY-003", screenshot);
 	}
 	
 	private void writeScreenshot(String filename, File screenshot) {

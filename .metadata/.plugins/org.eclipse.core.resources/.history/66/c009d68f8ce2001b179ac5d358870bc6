@@ -22,8 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -194,9 +192,6 @@ public class EditEntryTest {
 		// Click Edit Details
 		String actualUrl = driver.getCurrentUrl();
 		assertEquals(actualUrl,expectedUrl);	
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("EE-VERIFY-AllLIST-001", screenshot);	
 	 }
 
 	//Test Case ID: EE-VERIFY-EDITBUTTON-001
@@ -212,9 +207,6 @@ public class EditEntryTest {
 		int count = rows.size()-1;
 		int buttoncount = buttons.size();
 		assertEquals(count,buttoncount);	
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("EE-VERIFY-EDITBUTTON-001", screenshot);
 	 }	
 	
 	// Test Case ID: EE-VERIFY-ELEMENTS-001
@@ -245,9 +237,6 @@ public class EditEntryTest {
 		WebElement returnLink = driver.findElement(By.linkText(expectedLinkText));
 		assertTrue(returnLink.isDisplayed());
 		assertTrue(returnLink.getAttribute("href").equals(expectedUrl));
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("EE-VERIFY-ELEMENTS-001", screenshot);
 	}
 			
 	// Test Case ID: EE-INVALID-ENTRY-001
@@ -268,10 +257,7 @@ public class EditEntryTest {
 			// assert error messages
 			String actualErrorMsg = driver.findElement(By.xpath("/html/body/p")).getText();
 			assertTrue(actualErrorMsg.contains(expectedNameErrorMsg));
-			assertTrue(actualErrorMsg.contains(expectedAddressErrorMsg));
-			// capture screenshot
-			File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-			writeScreenshot("EE-INVALID-ENTRY-001", screenshot);		
+			assertTrue(actualErrorMsg.contains(expectedAddressErrorMsg));		
 		}
 	
 	//---Address
@@ -370,9 +356,6 @@ public class EditEntryTest {
 			            stmt = null;
 			        }
 			    }
-				// capture screenshot
-				File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-				writeScreenshot("EE-VALID-ENTRY-001", screenshot);
 				// click continue button
 				driver.findElement(By.xpath("/html/body/form/div/input")).click();
 				// back on index.php and ready for next loop
@@ -391,14 +374,10 @@ public class EditEntryTest {
 
 		List<WebElement> testdata = driver.findElements(By.xpath("//td[contains(text(),'edit test')]"));
 		assertEquals(testdata.size(),2);
-		
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("EE-VIEW-ENTRY-001", screenshot);
 			
 	}
 	
-	// Test Case ID: EE-TEXTBOX-LENGTH-001
+	// Test Case ID: ******
 		@Test
 		@Order(7)
 		void EditEntryFreshPageTextboxLength() {
@@ -414,12 +393,9 @@ public class EditEntryTest {
 				}
 				
 			}
-			// capture screenshot
-			File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-			writeScreenshot("EE-TEXTBOX-LENGTH-001", screenshot);
 		}
 		
-		// Test Case ID: EE-ERROR-TEXTBOX-LENGTH-001
+		// Test Case ID: ******
 		@Test
 		@Order(8)
 		void AddNewEntryErrorPageTextboxLength() {
@@ -439,9 +415,6 @@ public class EditEntryTest {
 				}
 				
 			}
-			// capture screenshot
-			File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-			writeScreenshot("EE-ERROR-TEXTBOX-LENGTH-001", screenshot);
 		}
 
 		private void writeScreenshot(String filename, File screenshot) {

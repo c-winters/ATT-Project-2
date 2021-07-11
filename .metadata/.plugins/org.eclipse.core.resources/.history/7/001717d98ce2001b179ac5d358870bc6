@@ -196,7 +196,7 @@ public class EditEntryTest {
 		assertEquals(actualUrl,expectedUrl);	
 		// capture screenshot
 		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("EE-VERIFY-AllLIST-001", screenshot);	
+		writeScreenshot("EE-VERIFY-EDITBUTTON-001", screenshot);	
 	 }
 
 	//Test Case ID: EE-VERIFY-EDITBUTTON-001

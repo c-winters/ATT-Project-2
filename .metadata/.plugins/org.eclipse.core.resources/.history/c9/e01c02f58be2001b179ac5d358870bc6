@@ -156,10 +156,7 @@ public class AddNewEntryTests {
 		// assertions for return link
 		WebElement returnLink = driver.findElement(By.linkText(expectedLinkText));
 		assertTrue(returnLink.isDisplayed());
-		assertTrue(returnLink.getAttribute("href").equals(expectedLinkUrl));	
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-VERIFY-ELEMENTS-001", screenshot);
+		assertTrue(returnLink.getAttribute("href").equals(expectedLinkUrl));
 	}
 	
 	// Test Case ID: ANE-VALID-ENTRY-001
@@ -187,9 +184,6 @@ public class AddNewEntryTests {
 		assertEquals(expectedConfirmationMsg, actualConfirmationMsg);
 		// assert continue button is present and enabled
 		assertTrue(driver.findElement(By.xpath("/html/body/form/div/input")).isEnabled());	
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("ANE-VALID-ENTRY-001", screenshot);
 		
 		// assert that the database stored the correct information
 		try {

@@ -194,9 +194,6 @@ public class EditEntryTest {
 		// Click Edit Details
 		String actualUrl = driver.getCurrentUrl();
 		assertEquals(actualUrl,expectedUrl);	
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("EE-VERIFY-AllLIST-001", screenshot);	
 	 }
 
 	//Test Case ID: EE-VERIFY-EDITBUTTON-001
@@ -212,9 +209,6 @@ public class EditEntryTest {
 		int count = rows.size()-1;
 		int buttoncount = buttons.size();
 		assertEquals(count,buttoncount);	
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("EE-VERIFY-EDITBUTTON-001", screenshot);
 	 }	
 	
 	// Test Case ID: EE-VERIFY-ELEMENTS-001
@@ -245,9 +239,6 @@ public class EditEntryTest {
 		WebElement returnLink = driver.findElement(By.linkText(expectedLinkText));
 		assertTrue(returnLink.isDisplayed());
 		assertTrue(returnLink.getAttribute("href").equals(expectedUrl));
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("EE-VERIFY-ELEMENTS-001", screenshot);
 	}
 			
 	// Test Case ID: EE-INVALID-ENTRY-001

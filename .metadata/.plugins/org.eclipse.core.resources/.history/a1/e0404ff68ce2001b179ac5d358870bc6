@@ -1,8 +1,6 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,12 +14,9 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.io.FileHandler;
 
 /**
  * 
@@ -96,9 +91,6 @@ public class ViewEntryTest {
 			int count = rows.size()-1;
 			int buttoncount = buttons.size();
 			assertEquals(count,buttoncount);	
-			// capture screenshot
-			File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-			writeScreenshot("VD-VERIFY-VIEWBUTTON-001", screenshot);
 		 }	
 		
 	// Test Case ID: VD-VERIFY-ELEMENTS-001
@@ -124,21 +116,5 @@ public class ViewEntryTest {
 		WebElement returnLink = driver.findElement(By.linkText(expectedLinkText));
 		assertTrue(returnLink.isDisplayed());
 		assertTrue(returnLink.getAttribute("href").equals(expectedUrl));
-		// capture screenshot
-		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-		writeScreenshot("VD-VERIFY-ELEMENTS-001", screenshot);
-	}
-	
-
-
-	private void writeScreenshot(String filename, File screenshot) {
-		System.out.println("Attempting to write screenshot...");
-		String path = "./Screenshots/" + filename + ".png";
-		try {
-			FileHandler.copy(screenshot, new File(path));
-			System.out.println("writing screenshot for test " + filename);
-		} catch (IOException e) {
-			System.out.println("Failed to write file: " + filename + " screenshot.");
-		}
 	}
 }

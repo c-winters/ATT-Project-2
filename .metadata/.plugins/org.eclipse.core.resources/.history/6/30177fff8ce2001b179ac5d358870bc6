@@ -96,9 +96,6 @@ public class ViewEntryTest {
 			int count = rows.size()-1;
 			int buttoncount = buttons.size();
 			assertEquals(count,buttoncount);	
-			// capture screenshot
-			File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-			writeScreenshot("VD-VERIFY-VIEWBUTTON-001", screenshot);
 		 }	
 		
 	// Test Case ID: VD-VERIFY-ELEMENTS-001
