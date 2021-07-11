@@ -49,6 +49,8 @@ public class EditEntryTest {
 	static String expectedLinkText = "Return (Cancel)";
 	static String expectedUrl = "http://localhost/allList.php";
 	
+	static int[] formFieldSize = {0,50,50,75,75,75,75,50,50,50,20,128,128,128,0,25,0,25,0,25,128,128,128};
+	
 	// form field id values
 	static String[] formFieldIds = {"addr_type",
 									"addr_first_name",
@@ -371,5 +373,45 @@ public class EditEntryTest {
 		assertEquals(testdata.size(),2);
 			
 	}
+	
+	// Test Case ID: ******
+		@Test
+		@Order(7)
+		void EditEntryFreshPageTextboxLength() {
+			// go to edit entry page
+			driver.findElement(By.linkText("List All Entries")).click();
+			// click to edit a record
+			driver.findElement(By.xpath("//input[@value='Edit Details']")).submit();
+			// assertions size for all text box form fields
+			for(int i = 0; i < formFieldIds.length; i++) {
+				if ( formFieldSize[i] != 0 ) {  // does not check input length for dropdowns
+					// System.out.println(formFieldIds[i]); // used to isolate the form box with the incorrect data
+					assertEquals(Integer.toString(formFieldSize[i]),driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength"));
+				}
+				
+			}
+		}
+		
+		// Test Case ID: ******
+		@Test
+		@Order(8)
+		void AddNewEntryErrorPageTextboxLength() {
+			// go to edit entry page
+			driver.findElement(By.linkText("List All Entries")).click();
+			// click to edit a record
+			driver.findElement(By.xpath("//input[@value='Edit Details']")).submit();
+			//clear all fields to check		
+			clearField();
+			// submit form with no information to produce error page
+			driver.findElement(By.id("submit_button")).click();
+			// assertions size for all text box form fields
+			for(int i = 0; i < formFieldIds.length; i++) {
+				if ( formFieldSize[i] != 0 ) {  // does not check input length for dropdowns
+					// System.out.println(formFieldIds[i]); // used to isolate the form box with the incorrect data
+					assertEquals(Integer.toString(formFieldSize[i]),driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength"));
+				}
+				
+			}
+		}
 	
 }

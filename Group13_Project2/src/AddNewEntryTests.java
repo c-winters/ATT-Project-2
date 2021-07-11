@@ -56,6 +56,8 @@ public class AddNewEntryTests {
 			"addr_phone_1_type", "addr_phone_1", "addr_phone_2_type", "addr_phone_2", "addr_phone_3_type", "addr_phone_3",
 			"addr_web_url_1", "addr_web_url_2", "addr_web_url_3"
 	};
+	
+	static int[] formFieldSize = {0,50,50,75,75,75,75,50,50,50,20,128,128,128,0,25,0,25,0,25,128,128,128};
 
 	static String[] formTestData = {
 			"Other", "test fname", "test lname", "z test bname", 
@@ -447,6 +449,40 @@ public class AddNewEntryTests {
 			 	currentSelect = new Select(currentElement);
 				assertEquals("Home", currentSelect.getFirstSelectedOption().getAttribute("value"));
 			}
+		}
+	}
+	
+	// Test Case ID: ******
+	@Test
+	@Order(11)
+	void AddNewEntryFreshPageTextboxLength() {
+		// go to add new entry page
+		driver.findElement(By.linkText("Add New Entry")).click();
+		// assertions size for all text box form fields
+		for(int i = 0; i < formFieldIds.length; i++) {
+			if ( formFieldSize[i] != 0 ) {  // does not check input length for dropdowns
+				// System.out.println(formFieldIds[i]); // used to isolate the form box with the incorrect data
+				assertEquals(Integer.toString(formFieldSize[i]),driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength"));
+			}
+			
+		}
+	}
+	
+	// Test Case ID: ******
+	@Test
+	@Order(12)
+	void AddNewEntryErrorPageTextboxLength() {
+		// go to add new entry page
+		driver.findElement(By.linkText("Add New Entry")).click();
+		// submit form with no information to produce error page
+		driver.findElement(By.id("submit_button")).click();
+		// assertions size for all text box form fields
+		for(int i = 0; i < formFieldIds.length; i++) {
+			if ( formFieldSize[i] != 0 ) {  // does not check input length for dropdowns
+				// System.out.println(formFieldIds[i]); // used to isolate the form box with the incorrect data
+				assertEquals(Integer.toString(formFieldSize[i]),driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength"));
+			}
+			
 		}
 	}
 
