@@ -166,7 +166,7 @@ public class EditEntryTest {
 	
 	@AfterAll
 	static void tearDownAfterClass() throws Exception {
-		//driver.close();
+		driver.close();
 	}
 //	-----------------------------------------------------------------------------	
 	//clear field method
@@ -262,6 +262,12 @@ public class EditEntryTest {
 		void ValidEditEntryTest1() {
 			int firstValid[] = {1,2,3,1,2,3,1,2,3,1,2,3};
 			int secondValid[] = {4,5,6,11,12,13,15,17,19,20,21,22};
+			Select drpDown = null;
+			WebElement drpValue = null;
+			String drpAddr_type = null;
+			String drpPhoneType1 = null;
+			String drpPhoneType2 = null;
+			String drpPhoneType3 = null;
 			
 			for ( int index = 0; index<firstValid.length; index++ ) {
 				// click List all Entries
@@ -270,6 +276,19 @@ public class EditEntryTest {
 				driver.findElement(By.xpath("//input[@value='Edit Details']")).submit();
 				
 				clearField();
+				// get the values of the dropdowns
+				drpDown = new Select(driver.findElement(By.name("addr_type")));
+				drpValue = drpDown.getFirstSelectedOption();
+				drpAddr_type = drpValue.getText();
+				drpDown = new Select(driver.findElement(By.name("addr_phone_1_type")));
+				drpValue = drpDown.getFirstSelectedOption();
+				drpPhoneType1 = drpValue.getText();
+				drpDown = new Select(driver.findElement(By.name("addr_phone_2_type")));
+				drpValue = drpDown.getFirstSelectedOption();
+				drpPhoneType2 = drpValue.getText();
+				drpDown = new Select(driver.findElement(By.name("addr_phone_3_type")));
+				drpValue = drpDown.getFirstSelectedOption();
+				drpPhoneType3 = drpValue.getText();
 				
 				// check minimum requirements
 				driver.findElement(By.id(formFieldIds[firstValid[index]])).sendKeys("edit test");
@@ -286,8 +305,20 @@ public class EditEntryTest {
 			        rs = stmt.executeQuery("SELECT * FROM addresses ORDER BY addr_id DESC limit 1");
 			        rs = stmt.getResultSet();
 			        rs.next();
-			        for ( int db_index = 1; db_index < formFieldIds.length; db_index++ ) {
-			        	if ( db_index != 14 && db_index != 16 && db_index != 18 ) {
+			        for ( int db_index = 0; db_index < formFieldIds.length; db_index++ ) {			        	
+			        	if ( db_index == 0 ) {
+			        		assertEquals(drpAddr_type,rs.getString(formFieldIds[db_index]));
+			        	}
+			        	else if ( db_index == 14 ) {
+			        		assertEquals(drpPhoneType1,rs.getString(formFieldIds[db_index]));
+			        	}
+			        	else if ( db_index == 16 ) {
+			        		assertEquals(drpPhoneType2,rs.getString(formFieldIds[db_index]));
+			        	}
+			        	else if ( db_index == 18 ) {
+			        		assertEquals(drpPhoneType3,rs.getString(formFieldIds[db_index]));
+			        	}
+			        	else {
 			        		if ( db_index == firstValid[index] || db_index == secondValid[index] ) {
 				        		assertEquals("edit test",rs.getString(formFieldIds[db_index]));
 				        		
