@@ -399,59 +399,65 @@ public class EditEntryTest {
 	}
 	
 	// Test Case ID: EE-TEXTBOX-LENGTH-001
-		@Test
-		@Order(7)
-		void EditEntryFreshPageTextboxLength() {
-			// go to edit entry page
-			driver.findElement(By.linkText("List All Entries")).click();
-			// click to edit a record
-			driver.findElement(By.xpath("//input[@value='Edit Details']")).submit();
-			// assertions size for all text box form fields
-			for(int i = 0; i < formFieldIds.length; i++) {
-				if ( formFieldSize[i] != 0 ) {  // does not check input length for dropdowns
-					// System.out.println(formFieldIds[i]); // used to isolate the form box with the incorrect data
-					assertEquals(Integer.toString(formFieldSize[i]),driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength"));
-				}
-				
+	@Test
+	@Order(7)
+	void EditEntryFreshPageTextboxLength() {
+		// go to edit entry page
+		driver.findElement(By.linkText("List All Entries")).click();
+		// click to edit a record
+		driver.findElement(By.xpath("//input[@value='Edit Details']")).submit();
+		// assertions size for all text box form fields
+		for(int i = 0; i < formFieldIds.length; i++) {
+			if ( formFieldSize[i] != 0 ) {  // does not check input length for dropdowns
+				// System.out.println(formFieldIds[i]); // used to isolate the form box with the incorrect data
+				assertEquals(Integer.toString(formFieldSize[i]),driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength"));
 			}
-			// capture screenshot
-			File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-			writeScreenshot("EE-TEXTBOX-LENGTH-001", screenshot);
+			
+		}
+		// capture screenshot
+		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+		writeScreenshot("EE-TEXTBOX-LENGTH-001", screenshot);
+	}
+	
+	// Test Case ID: EE-ERROR-TEXTBOX-LENGTH-001
+	@Test
+	@Order(8)
+	void AddNewEntryErrorPageTextboxLength() {
+		// go to edit entry page
+		driver.findElement(By.linkText("List All Entries")).click();
+		// click to edit a record
+		driver.findElement(By.xpath("//input[@value='Edit Details']")).submit();
+		//clear all fields to check		
+		clearField();
+		// submit form with no information to produce error page
+		driver.findElement(By.id("submit_button")).click();
+		// assertions size for all text box form fields
+		for(int i = 0; i < formFieldIds.length; i++) {
+			if ( formFieldSize[i] != 0 ) {  // does not check input length for dropdowns
+				// System.out.println(formFieldIds[i]); // used to isolate the form box with the incorrect data
+				assertEquals(Integer.toString(formFieldSize[i]),driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength"));
+			}
+			
+		}
+		// capture screenshot
+		File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+		writeScreenshot("EE-ERROR-TEXTBOX-LENGTH-001", screenshot);
+	}
+
+	private void writeScreenshot(String filename, File screenshot) {
+		System.out.println("Attempting to write screenshot...");
+		String directoryName = "./Screenshots/";
+		File directory = new File(String.valueOf(directoryName));
+		filename = directoryName + filename + ".png";
+		 if(!directory.exists()){
+            directory.mkdir();
 		}
 		
-		// Test Case ID: EE-ERROR-TEXTBOX-LENGTH-001
-		@Test
-		@Order(8)
-		void AddNewEntryErrorPageTextboxLength() {
-			// go to edit entry page
-			driver.findElement(By.linkText("List All Entries")).click();
-			// click to edit a record
-			driver.findElement(By.xpath("//input[@value='Edit Details']")).submit();
-			//clear all fields to check		
-			clearField();
-			// submit form with no information to produce error page
-			driver.findElement(By.id("submit_button")).click();
-			// assertions size for all text box form fields
-			for(int i = 0; i < formFieldIds.length; i++) {
-				if ( formFieldSize[i] != 0 ) {  // does not check input length for dropdowns
-					// System.out.println(formFieldIds[i]); // used to isolate the form box with the incorrect data
-					assertEquals(Integer.toString(formFieldSize[i]),driver.findElement(By.id(formFieldIds[i])).getAttribute("maxlength"));
-				}
-				
-			}
-			// capture screenshot
-			File screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-			writeScreenshot("EE-ERROR-TEXTBOX-LENGTH-001", screenshot);
+		try {
+			FileHandler.copy(screenshot, new File(filename));
+			System.out.println("writing screenshot for test " + filename);
+		} catch (IOException e) {
+			System.out.println("Failed to write file: " + filename + " screenshot.");
 		}
-
-		private void writeScreenshot(String filename, File screenshot) {
-			System.out.println("Attempting to write screenshot...");
-			String path = "./Screenshots/" + filename + ".png";
-			try {
-				FileHandler.copy(screenshot, new File(path));
-				System.out.println("writing screenshot for test " + filename);
-			} catch (IOException e) {
-				System.out.println("Failed to write file: " + filename + " screenshot.");
-			}
-		}
+	}
 }
